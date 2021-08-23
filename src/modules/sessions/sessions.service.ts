@@ -12,6 +12,7 @@ export class SessionsService {
   ) {}
 
   async create(dto: CreateSessionDto): Promise<Session> {
-    return new this.sessionModel({ ...dto, expiresIn: Date.now() }).save();
+    const expiresIn = +new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    return new this.sessionModel({ ...dto, expiresIn }).save();
   }
 }

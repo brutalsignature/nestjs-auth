@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Request,
+  Response,
   UseGuards,
   Body,
   Ip,
@@ -21,14 +22,28 @@ export class AuthController {
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req, @Body() body, @Headers() headers, @Ip() ip) {
-    return this.authService.login(
+  async login(
+    @Request() req,
+    @Response({ passthrough: true }) res,
+    @Body() body,
+    @Headers() headers,
+    @Ip() ip,
+  ) {
+    const response = await this.authService.login(
       req.user,
-      'dflgfdh',
       body.fingerprint,
       headers['user-agent'],
       ip,
     );
+
+    res.cookie('refreshToken', response.refreshToken);
+
+    return response;
+  }
+
+  @Post('refresh')
+  async refresh(@Request() req) {
+    return this.authService.refresh(req.user, req.cookies['refreshToken']);
   }
 
   @UseGuards(JwtAuthGuard)
