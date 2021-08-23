@@ -4,11 +4,13 @@ import { compareSync } from 'bcrypt';
 
 import { UsersService } from '../users/users.service';
 import { UserDocument, User } from '../users/schemas/user.schema';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private sessionsService: SessionsService,
     private jwtService: JwtService,
   ) {}
 
@@ -22,7 +24,21 @@ export class AuthService {
     return user;
   }
 
-  async login(user: UserDocument) {
+  async login(
+    user: UserDocument,
+    refreshToken,
+    fingerprint,
+    userAgent: string,
+    ip: string,
+  ) {
+    await this.sessionsService.create({
+      userId: user._id,
+      refreshToken: 'elgfegf',
+      fingerprint,
+      userAgent,
+      ip,
+    });
+
     const payload = { id: user._id };
 
     return {

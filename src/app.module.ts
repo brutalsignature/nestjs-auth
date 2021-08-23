@@ -7,12 +7,14 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { SessionsModule } from './modules/sessions/sessions.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/slaido'),
     AuthModule,
     UsersModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, AppService],
