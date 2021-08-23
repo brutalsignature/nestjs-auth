@@ -22,7 +22,7 @@ export class UsersService {
     return new this.userModel({ ...dto, password }).save();
   }
 
-  async findOne(email: string): Promise<UserDocument> {
+  async findOne(email: string): Promise<User> {
     return this.userModel.findOne({ email });
     // .exec()
     // .then((res) => res.toObject());
