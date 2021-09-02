@@ -15,4 +15,8 @@ export class SessionsService {
     const expiresIn = +new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     return new this.sessionModel({ ...dto, expiresIn }).save();
   }
+
+  async findByRefreshToken(refreshToken: string): Promise<Session> {
+    return this.sessionModel.findOneAndDelete({ refreshToken });
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -49,7 +49,28 @@ export class AuthService {
     };
   }
 
-  refresh(user, refreshToken) {
-    console.log(user, refreshToken);
+  async refresh(refreshToken, fingerprint, userAgent, ip) {
+    const foundSession = await this.sessionsService.findByRefreshToken(
+      fingerprint,
+    );
+
+    if (!foundSession || +new Date(foundSession.expiresIn) > +new Date()) {
+      throw new UnauthorizedException();
+    }
+
+    const newRefreshToken = uuidv4();
+
+    await this.sessionsService.create({
+      userId: foundSession.userId,
+      refreshToken: newRefreshToken,
+      fingerprint,
+      userAgent,
+      ip,
+    });
+
+    return {
+      accessToken: this.jwtService.sign({ id: foundSession.userId }),
+      refreshToken: newRefreshToken,
+    };
   }
 }
